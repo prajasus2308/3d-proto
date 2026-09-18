@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3DWorld — Explore Another Dimension</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  background:#050816;color:#f6f8ff;overflow-x:hidden
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(40,120,255,.15),transparent 28%),
+    radial-gradient(circle at 80% 60%,rgba(124,58,237,.13),transparent 30%),
+    linear-gradient(180deg,#070b1c,#03040b 80%)
+}
+nav{
+  position:fixed;top:0;left:0;width:100%;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 6%;backdrop-filter:blur(18px);
+  background:rgba(5,8,22,.55);border-bottom:1px solid rgba(255,255,255,.08)
+}
+.logo{font-size:24px;font-weight:900;letter-spacing:-1px}
+.logo span{color:#5ca8ff}
+.links{display:flex;gap:30px;list-style:none}
+.links a{color:#cbd3e8;text-decoration:none;font-size:14px;transition:.25s}
+.links a:hover{color:white}
+.navbtn,.hero button{
+  border:0;color:white;font-weight:800;cursor:pointer;
+  background:linear-gradient(135deg,#287cff,#7c3aed);
+  padding:12px 20px;border-radius:999px;
+  box-shadow:0 12px 35px rgba(72,100,255,.28)
+}
+.hero{
+  min-height:100vh;padding:150px 6% 80px;display:grid;
+  grid-template-columns:1fr 1fr;align-items:center;gap:50px;position:relative
+}
+.badge{
+  display:inline-block;padding:8px 14px;
+  border:1px solid rgba(104,170,255,.3);
+  border-radius:999px;color:#8dc4ff;
+  background:rgba(50,120,255,.08);
+  font-size:13px;margin-bottom:22px
+}
+h1{font-size:clamp(52px,7vw,94px);line-height:.95;letter-spacing:-5px}
+.gradient{
+  background:linear-gradient(90deg,#fff,#5ca8ff,#a78bfa);
+  -webkit-background-clip:text;color:transparent
+}
+.hero p{
+  max-width:560px;color:#aab4ca;
+  font-size:18px;line-height:1.7;margin:26px 0
+}
+.scene{height:560px;display:grid;place-items:center;perspective:1000px}
+.cube{
+  width:190px;height:190px;position:relative;
+  transform-style:preserve-3d;
+  transform:rotateX(-20deg) rotateY(35deg);
+  animation:spin 14s linear infinite
+}
+.face{
+  position:absolute;inset:0;
+  border:2px solid rgba(150,210,255,.55);
+  background:linear-gradient(
+    135deg,
+    rgba(55,130,255,.5),
+    rgba(124,58,237,.2)
+  );
+  box-shadow:
+    inset 0 0 40px rgba(75,150,255,.25),
+    0 0 35px rgba(65,120,255,.2)
+}
+.f1{transform:translateZ(95px)}
+.f2{transform:rotateY(180deg) translateZ(95px)}
+.f3{transform:rotateY(90deg) translateZ(95px)}
+.f4{transform:rotateY(-90deg) translateZ(95px)}
+.f5{transform:rotateX(90deg) translateZ(95px)}
+.f6{transform:rotateX(-90deg) translateZ(95px)}
+
+.ring{
+  position:absolute;width:410px;height:410px;
+  border:1px solid rgba(92,168,255,.35);
+  border-radius:50%;
+  transform:rotateX(68deg);
+  animation:orbit 7s linear infinite
+}
+.ring2{
+  width:320px;height:320px;
+  transform:rotateY(65deg);
+  animation-duration:10s
+}
+.orb{
+  position:absolute;width:35px;height:35px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle at 30% 25%,
+    white,#59a7ff 35%,#4f46e5 75%
+  );
+  box-shadow:0 0 35px #4d8dff;
+  transform:translate(180px,-130px);
+  animation:float 4s ease-in-out infinite
+}
+@keyframes spin{
+  to{transform:rotateX(340deg) rotateY(395deg)}
+}
+@keyframes orbit{
+  to{transform:rotateX(68deg) rotateZ(360deg)}
+}
+@keyframes float{
+  50%{transform:translate(180px,-155px)}
+}
+section{padding:110px 6%}
+.section-title{text-align:center;font-size:44px;margin-bottom:15px}
+.section-sub{text-align:center;color:#8e99b2;margin-bottom:55px}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px
+}
+.card{
+  padding:30px;border-radius:22px;min-height:220px;
+  background:linear-gradient(
+    145deg,
+    rgba(22,30,58,.8),
+    rgba(8,12,27,.85)
+  );
+  border:1px solid rgba(255,255,255,.09);
+  transform-style:preserve-3d;
+  transition:.25s
+}
+.card:hover{
+  transform:translateY(-10px) rotateX(4deg) rotateY(-4deg);
+  border-color:rgba(92,168,255,.45)
+}
+.icon{font-size:42px;margin-bottom:25px}
+.card h3{font-size:20px;margin-bottom:10px}
+.card p{color:#929db6;line-height:1.6}
+
+.showcase{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  align-items:center
+}
+.panel{
+  padding:45px;border-radius:28px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(
+      circle at 70% 20%,
+      rgba(82,130,255,.16),
+      transparent 35%
+    ),
+    #0a1024
+}
+.panel h2{font-size:42px;margin-bottom:18px}
+.panel p{color:#9aa6bf;line-height:1.7}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-top:30px
+}
+.stat{
+  padding:18px;
+  border-radius:16px;
+  background:rgba(255,255,255,.04)
+}
+.stat b{font-size:28px}
+.stat small{
+  display:block;
+  color:#8490aa;
+  margin-top:5px
+}
+.cta{text-align:center;padding:100px 20px}
+.cta h2{
+  font-size:clamp(40px,6vw,70px);
+  letter-spacing:-3px
+}
+.cta p{
+  color:#9aa6bf;
+  margin:20px auto 30px;
+  max-width:600px
+}
+footer{
+  padding:30px 6%;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#75809a;
+  display:flex;
+  justify-content:space-between
+}
+
+@media(max-width:850px){
+  .links{display:none}
+  .hero,.showcase{grid-template-columns:1fr}
+  .hero{padding-top:130px}
+  .scene{height:430px}
+  .cards{grid-template-columns:1fr 1fr}
+  h1{letter-spacing:-3px}
+}
+@media(max-width:520px){
+  .cards{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  nav{padding:16px 5%}
+  .navbtn{padding:10px 14px}
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">◈ <span>3D</span>World</div>
+
+  <ul class="links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#showcase">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <button class="navbtn"
+    onclick="document.querySelector('#contact').scrollIntoView()">
+    Get Started
+  </button>
+</nav>
+
+<main>
+
+<section class="hero" id="home">
+
+  <div>
+    <span class="badge">✦ THE FUTURE IS THREE-DIMENSIONAL</span>
+
+    <h1>
+      Explore<br>
+      <span class="gradient">3D World.</span>
+    </h1>
+
+    <p>
+      Step into an immersive digital space built for creativity,
+      imagination and next-generation experiences.
+    </p>
+
+    <button onclick="document.querySelector('#features').scrollIntoView({behavior:'smooth'})">
+      Explore Experience →
+    </button>
+  </div>
+
+  <div class="scene" aria-label="Animated 3D cube">
+    <div class="ring"></div>
+    <div class="ring ring2"></div>
+    <div class="orb"></div>
+
+    <div class="cube">
+      <div class="face f1"></div>
+      <div class="face f2"></div>
+      <div class="face f3"></div>
+      <div class="face f4"></div>
+      <div class="face f5"></div>
+      <div class="face f6"></div>
+    </div>
+  </div>
+
+</section>
+
+<section id="features">
+
+  <h2 class="section-title">
+    Built for the <span class="gradient">next dimension</span>
+  </h2>
+
+  <p class="section-sub">
+    A futuristic interface with a little bit of magic.
+  </p>
+
+  <div class="cards">
+
+    <article class="card">
+      <div class="icon">◇</div>
+      <h3>3D Design</h3>
+      <p>
+        Create and explore beautiful three-dimensional worlds
+        with depth and motion.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="icon">✦</div>
+      <h3>Creative Ideas</h3>
+      <p>
+        Turn imagination into interactive digital experiences
+        that feel alive.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="icon">◉</div>
+      <h3>Immersive UI</h3>
+      <p>
+        Fluid animations and layered visuals make every
+        interaction feel natural.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="icon">⚡</div>
+      <h3>Fast & Responsive</h3>
+      <p>
+        Designed to look great on phones, tablets and desktop screens.
+      </p>
+    </article>
+
+  </div>
+</section>
+
+<section id="showcase">
+
+  <div class="showcase">
+
+    <div class="panel">
+      <span class="badge">INTERACTIVE EXPERIENCE</span>
+
+      <h2>
+        Move your cursor.<br>
+        <span class="gradient">Feel the depth.</span>
+      </h2>
+
+      <p>
+        This website uses pure HTML, CSS and JavaScript—no frameworks
+        required. The 3D scene and card interactions respond smoothly
+        to your movements.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <b>3D</b>
+          <small>Visual depth</small>
+        </div>
+
+        <div class="stat">
+          <b>60fps</b>
+          <small>Fluid motion</small>
+        </div>
+
+        <div class="stat">
+          <b>100%</b>
+          <small>Responsive</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene" id="miniScene">
+      <div class="ring"></div>
+
+      <div class="cube" style="width:120px;height:120px">
+        <div class="face f1"></div>
+        <div class="face f2"></div>
+        <div class="face f3"></div>
+        <div class="face f4"></div>
+        <div class="face f5"></div>
+        <div class="face f6"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cta" id="contact">
+
+  <h2>
+    Ready to enter <span class="gradient">the 3D world?</span>
+  </h2>
+
+  <p>
+    Welcome to a website where design, motion and imagination
+    come together.
+  </p>
+
+  <button class="navbtn"
+    onclick="alert('Welcome to 3DWorld! 🚀')">
+    Enter 3DWorld →
+  </button>
+
+</section>
+
+</main>
+
+<footer>
+  <span>© 2026 3DWorld</span>
+  <span>Designed in three dimensions ✦</span>
+</footer>
+
+<script>
+document.addEventListener('mousemove',e=>{
+  const x=(e.clientX/innerWidth-.5),
+        y=(e.clientY/innerHeight-.5);
+
+  document.querySelectorAll('.card').forEach((c,i)=>{
+    c.style.transform=
+      `translateY(-${Math.max(0,8-Math.abs(x*10))}px)
+       rotateX(${y*-4}deg)
+       rotateY(${x*5}deg)`
+  });
+});
+</script>
+
+</body>
+</html>
+
